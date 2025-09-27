@@ -11,3 +11,11 @@
 2025-09-27 19:51:01,109 - yfinance - ERROR - Failed to get ticker 'NVDA' reason: Expecting value: line 1 column 1 (char 0)
 2025-09-27 19:51:01,283 - yfinance - ERROR - NVDA: No price data found, symbol may be delisted (period=1y)
 2025-09-27 19:51:01,389 - main - ERROR - No data available for backtest
+2025-09-27 19:59:37,165 - main - INFO - Trading system initialized successfully
+2025-09-27 19:59:37,165 - main - INFO - Starting backtest for symbols: ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']
+2025-09-27 19:59:52,579 - main - INFO - Trading system initialized successfully
+2025-09-27 19:59:52,579 - main - INFO - Starting backtest for symbols: ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']
+2025-09-27 19:59:54,631 - main - INFO - Backtest completed. Total return: 0.00%
+2025-09-27 20:00:04,199 - main - INFO - Trading system initialized successfully
+2025-09-27 20:00:04,200 - main - INFO - Starting backtest for symbols: ['AAPL', 'MSFT']
+2025-09-27 20:00:05,750 - main - INFO - Backtest completed. Total return: 0.00%

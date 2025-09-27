@@ -185,7 +185,10 @@ class BacktestEngine:
         # Trade statistics
         trade_df = pd.DataFrame(self.trades)
         total_trades = len(trade_df)
-        winning_trades = len(trade_df[trade_df.get('pnl', 0) > 0])
+        if 'pnl' in trade_df.columns:
+            winning_trades = len(trade_df[trade_df['pnl'] > 0])
+        else:
+            winning_trades = 0
         win_rate = winning_trades / total_trades if total_trades > 0 else 0
         
         return {
