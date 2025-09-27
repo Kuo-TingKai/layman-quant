@@ -1,0 +1,13 @@
+2025-09-27 19:50:59,195 - main - INFO - Trading system initialized successfully
+2025-09-27 19:50:59,195 - main - INFO - Starting backtest for symbols: ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']
+2025-09-27 19:50:59,447 - yfinance - ERROR - Failed to get ticker 'AAPL' reason: Expecting value: line 1 column 1 (char 0)
+2025-09-27 19:50:59,589 - yfinance - ERROR - AAPL: No price data found, symbol may be delisted (period=1y)
+2025-09-27 19:50:59,829 - yfinance - ERROR - Failed to get ticker 'MSFT' reason: Expecting value: line 1 column 1 (char 0)
+2025-09-27 19:50:59,971 - yfinance - ERROR - MSFT: No price data found, symbol may be delisted (period=1y)
+2025-09-27 19:51:00,238 - yfinance - ERROR - Failed to get ticker 'GOOGL' reason: Expecting value: line 1 column 1 (char 0)
+2025-09-27 19:51:00,390 - yfinance - ERROR - GOOGL: No price data found, symbol may be delisted (period=1y)
+2025-09-27 19:51:00,667 - yfinance - ERROR - Failed to get ticker 'TSLA' reason: Expecting value: line 1 column 1 (char 0)
+2025-09-27 19:51:00,853 - yfinance - ERROR - TSLA: No price data found, symbol may be delisted (period=1y)
+2025-09-27 19:51:01,109 - yfinance - ERROR - Failed to get ticker 'NVDA' reason: Expecting value: line 1 column 1 (char 0)
+2025-09-27 19:51:01,283 - yfinance - ERROR - NVDA: No price data found, symbol may be delisted (period=1y)
+2025-09-27 19:51:01,389 - main - ERROR - No data available for backtest
