@@ -10,6 +10,8 @@
 - 🛡️ **風險管理**: 內建停損、停利、持倉限制等風險控制
 - 📧 **即時通知**: 支援郵件和簡訊通知（可選）
 - 💰 **低成本**: 使用免費的 yfinance 數據源
+- 🇹🇼 **台股支援**: 完整支援台股數據獲取和回測
+- 🌍 **多市場**: 同時支援美股和台股交易
 
 ## 系統架構
 
@@ -56,7 +58,7 @@ cp env_example.txt .env
 
 編輯 `.env` 檔案，填入您的郵件和簡訊設定。
 
-### 3. 執行回測
+### 3. 執行美股回測
 
 ```bash
 # 使用預設參數回測
@@ -66,14 +68,24 @@ python run_backtest.py
 python run_backtest.py --symbols AAPL MSFT GOOGL TSLA --period 1y --rsi-period 14
 ```
 
-### 4. 執行即時交易模擬
+### 4. 執行台股回測
 
 ```bash
-# 使用預設參數
-python run_live.py
+# 台股回測（台積電、鴻海、聯發科）
+python run_taiwan_backtest.py --symbols 2330 2317 2454
 
-# 自訂參數
-python run_live.py --symbols AAPL MSFT --interval 30 --rsi-period 14
+# 自訂台股標的和參數
+python run_taiwan_backtest.py --symbols 2330 2317 2454 6505 2308 --period 1y --rsi-period 14
+```
+
+### 5. 執行即時交易模擬
+
+```bash
+# 美股即時交易
+python run_live.py --symbols AAPL MSFT --interval 30
+
+# 台股即時交易
+python run_live.py --symbols 2330 2317 --interval 30
 ```
 
 ## 使用說明
