@@ -114,6 +114,42 @@ def run_taiwan_backtest(symbols, period="1y", strategy_config=None):
         print(f"📊 圖表已保存至: {plot_file}")
     except Exception as e:
         print(f"⚠️ 無法生成圖表: {str(e)}")
+    
+    # Send notification
+    try:
+        from notifications import NotificationService
+        from config import Config
+        import os
+        from dotenv import load_dotenv
+        
+        load_dotenv()
+        config = Config()
+        
+        notification_service = NotificationService(config.__dict__)
+        
+        backtest_info = {
+            'strategy_name': '台股 RSI + 移動平均策略',
+            'symbols': symbols,
+            'period': period,
+            'total_return': results.get('total_return', 0),
+            'annualized_return': results.get('annualized_return', 0),
+            'sharpe_ratio': results.get('sharpe_ratio', 0),
+            'max_drawdown': results.get('max_drawdown', 0),
+            'total_trades': results.get('total_trades', 0),
+            'win_rate': results.get('win_rate', 0),
+            'final_portfolio_value': results.get('final_portfolio_value', 0),
+            'initial_capital': 100000,
+            'timestamp': datetime.now()
+        }
+        
+        success = notification_service.send_backtest_results(backtest_info)
+        if success:
+            print("✅ 台股回測結果通知已發送")
+        else:
+            print("⚠️ 台股回測結果通知發送失敗")
+            
+    except Exception as e:
+        print(f"⚠️ 發送通知時發生錯誤: {str(e)}")
 
 def main():
     """Main function"""

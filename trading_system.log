@@ -40,3 +40,6 @@
 2025-09-27 20:26:32,608 - main - INFO - Trading system initialized successfully
 2025-09-27 20:26:32,608 - main - INFO - Starting backtest for symbols: ['AAPL', 'MSFT']
 2025-09-27 20:26:33,788 - main - INFO - Backtest completed. Total return: 0.00%
+2025-09-27 20:29:39,292 - main - INFO - Trading system initialized successfully
+2025-09-27 20:29:39,292 - main - INFO - Starting backtest for symbols: ['AAPL']
+2025-09-27 20:29:40,371 - main - INFO - Backtest completed. Total return: -0.01%
