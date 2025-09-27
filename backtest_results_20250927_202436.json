@@ -1,0 +1,15 @@
+{
+  "total_return": 0.0,
+  "annualized_return": 0.0,
+  "volatility": 0.0,
+  "sharpe_ratio": 0.0,
+  "max_drawdown": 0.0,
+  "total_trades": 0,
+  "win_rate": 0.0,
+  "final_portfolio_value": 10000.0,
+  "symbols": [
+    "AAPL"
+  ],
+  "period": "6mo",
+  "timestamp": "20250927_202436"
+}

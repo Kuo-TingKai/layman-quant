@@ -68,7 +68,8 @@ class BacktestEngine:
                 
                 if symbol in signals_data:
                     symbol_signals = signals_data[symbol]
-                    date_signals = symbol_signals[symbol_signals.index == date]
+                    # Find signal for this date
+                    date_signals = symbol_signals[symbol_signals['date'] == date]
                     
                     if not date_signals.empty:
                         signal = date_signals['signal'].iloc[0]
@@ -86,49 +87,111 @@ class BacktestEngine:
         """Process trading signal"""
         current_position = self.positions.get(symbol, {'shares': 0})
         
-        if signal == 1 and current_position['shares'] == 0:  # Buy signal
-            position_size = strategy.calculate_position_size(signal, price, self.capital)
-            if position_size > 0:
-                cost = position_size * price * (1 + self.commission_rate)
-                if cost <= self.capital:
+        if signal == 1:  # Buy signal
+            if current_position['shares'] == 0:  # No position, buy
+                position_size = strategy.calculate_position_size(signal, price, self.capital)
+                if position_size > 0:
+                    cost = position_size * price * (1 + self.commission_rate)
+                    if cost <= self.capital:
+                        self.positions[symbol] = {
+                            'shares': position_size,
+                            'entry_price': price,
+                            'entry_time': date
+                        }
+                        self.capital -= cost
+                        self.trades.append({
+                            'date': date,
+                            'symbol': symbol,
+                            'action': 'BUY',
+                            'shares': position_size,
+                            'price': price,
+                            'value': cost
+                        })
+            elif current_position['shares'] < 0:  # Short position, close short and buy
+                self._close_position(symbol, price, date)
+                # Then buy
+                position_size = strategy.calculate_position_size(signal, price, self.capital)
+                if position_size > 0:
+                    cost = position_size * price * (1 + self.commission_rate)
+                    if cost <= self.capital:
+                        self.positions[symbol] = {
+                            'shares': position_size,
+                            'entry_price': price,
+                            'entry_time': date
+                        }
+                        self.capital -= cost
+                        self.trades.append({
+                            'date': date,
+                            'symbol': symbol,
+                            'action': 'BUY',
+                            'shares': position_size,
+                            'price': price,
+                            'value': cost
+                        })
+        
+        elif signal == -1:  # Sell signal
+            if current_position['shares'] > 0:  # Long position, sell
+                self._close_position(symbol, price, date)
+            elif current_position['shares'] == 0:  # No position, short sell
+                position_size = strategy.calculate_position_size(abs(signal), price, self.capital)
+                if position_size > 0:
+                    proceeds = position_size * price * (1 - self.commission_rate)
                     self.positions[symbol] = {
-                        'shares': position_size,
+                        'shares': -position_size,  # Negative for short position
                         'entry_price': price,
                         'entry_time': date
                     }
-                    self.capital -= cost
+                    self.capital += proceeds
                     self.trades.append({
                         'date': date,
                         'symbol': symbol,
-                        'action': 'BUY',
+                        'action': 'SELL_SHORT',
                         'shares': position_size,
                         'price': price,
-                        'value': cost
+                        'value': proceeds
                     })
-        
-        elif signal == -1 and current_position['shares'] > 0:  # Sell signal
-            self._close_position(symbol, price, date)
     
     def _close_position(self, symbol: str, price: float, date: pd.Timestamp):
         """Close position for given symbol"""
         if symbol in self.positions:
             position = self.positions[symbol]
-            proceeds = position['shares'] * price * (1 - self.commission_rate)
-            self.capital += proceeds
+            shares = position['shares']
             
-            # Calculate P&L
-            cost = position['shares'] * position['entry_price']
-            pnl = proceeds - cost
-            
-            self.trades.append({
-                'date': date,
-                'symbol': symbol,
-                'action': 'SELL',
-                'shares': position['shares'],
-                'price': price,
-                'value': proceeds,
-                'pnl': pnl
-            })
+            if shares > 0:  # Long position
+                proceeds = shares * price * (1 - self.commission_rate)
+                self.capital += proceeds
+                
+                # Calculate P&L
+                cost = shares * position['entry_price']
+                pnl = proceeds - cost
+                
+                self.trades.append({
+                    'date': date,
+                    'symbol': symbol,
+                    'action': 'SELL',
+                    'shares': shares,
+                    'price': price,
+                    'value': proceeds,
+                    'pnl': pnl
+                })
+                
+            elif shares < 0:  # Short position
+                cost = abs(shares) * price * (1 + self.commission_rate)
+                self.capital -= cost
+                
+                # Calculate P&L (for short: profit when price goes down)
+                proceeds = abs(shares) * position['entry_price']
+                pnl = proceeds - cost
+                
+                self.trades.append({
+                    'date': date,
+                    'symbol': symbol,
+                    'action': 'COVER_SHORT',
+                    'shares': abs(shares),
+                    'price': price,
+                    'value': cost,
+                    'pnl': pnl
+                })
             
             del self.positions[symbol]
     
@@ -138,10 +201,16 @@ class BacktestEngine:
         
         # Add value of current positions
         for symbol, position in self.positions.items():
-            # For simplicity, assume current price equals entry price
-            # In real implementation, you'd get current market price
-            position_value = position['shares'] * position['entry_price']
-            portfolio_value += position_value
+            shares = position['shares']
+            entry_price = position['entry_price']
+            
+            if shares > 0:  # Long position
+                position_value = shares * entry_price
+                portfolio_value += position_value
+            elif shares < 0:  # Short position
+                # For short positions, we owe shares, so we subtract the value
+                position_value = abs(shares) * entry_price
+                portfolio_value -= position_value
         
         self.portfolio_values.append(portfolio_value)
         self.dates.append(date)
